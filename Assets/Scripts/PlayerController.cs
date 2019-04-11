@@ -21,12 +21,14 @@ public class PlayerController : MonoBehaviour
     public bool attractPickUps;
     public float powerUpTime;
     public GameObject magnetSphere;
+    public Text timer;
 
     
     private Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
+        timer.text = "0";
         powerUpTime = 0f;
         rb = GetComponent<Rigidbody>();
         rb.velocity = new Vector3(0, 0, 0);
@@ -47,6 +49,13 @@ public class PlayerController : MonoBehaviour
         numCollectables = GameObject.FindGameObjectsWithTag("Pick Up").Length;
     }
 
+    private void Update()
+    {
+        if (!isLevelOver)
+        {
+            timer.text = ((int)Time.time).ToString();
+        }
+    }
 
     void FixedUpdate()
     {
@@ -136,13 +145,13 @@ public class PlayerController : MonoBehaviour
                 speedUp = false;
                 attractPickUps = true;
                 jumpHigher = false;
-                powerUpTime = 15f;
+                powerUpTime = 5f;
                 break;
             case "Jump":
                 speedUp = false;
                 attractPickUps = false;
                 jumpHigher = true;
-                powerUpTime = 10f;
+                powerUpTime = 15f;
                 break;
         }
     }

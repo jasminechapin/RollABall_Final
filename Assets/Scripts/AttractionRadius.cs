@@ -18,7 +18,7 @@ public class AttractionRadius : MonoBehaviour
         {
             other.transform.position =
                 Vector3.MoveTowards(other.transform.position,
-                transform.position, 3f * Time.deltaTime);
+                transform.position, 5f * Time.deltaTime);
         }
     }
 

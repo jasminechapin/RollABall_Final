@@ -12,6 +12,7 @@ TagManager:
   - Speed
   - Magnet
   - Jump
+  - Stop
   layers:
   - Default
   - TransparentFX
