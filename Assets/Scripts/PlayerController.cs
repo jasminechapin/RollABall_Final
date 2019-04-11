@@ -13,14 +13,21 @@ public class PlayerController : MonoBehaviour
     public Text winText;
     public bool isGrounded = true;
     private bool isLevelOver = false;
-    private float jumpForce = 300;
+    public float jumpForce = 300f;
     float pushPower = 4.0f;
+
+    public bool speedUp;
+    public bool jumpHigher;
+    public bool attractPickUps;
+    public float powerUpTime;
+    public GameObject magnetSphere;
 
     
     private Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
+        powerUpTime = 0f;
         rb = GetComponent<Rigidbody>();
         rb.velocity = new Vector3(0, 0, 0);
         count = 0;
@@ -63,6 +70,34 @@ public class PlayerController : MonoBehaviour
             rb.velocity = new Vector3(0, 0, 0);
             SetCountText();
         }
+
+        if (speedUp && powerUpTime > 0f)
+        {
+            speed = 10f;
+        }
+        else if (attractPickUps && powerUpTime > 0f)
+        {
+            magnetSphere.SetActive(true);
+        }
+        else if (jumpHigher && powerUpTime > 0f)
+        {
+            jumpForce = 500f;
+        }
+
+        if (powerUpTime > 0)
+        {
+            powerUpTime -= .01f;
+        }
+        else
+        {
+            speedUp = false;
+            attractPickUps = false;
+            jumpHigher = false;
+
+            speed = 5f;
+            magnetSphere.SetActive(false);
+            jumpForce = 300f;
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -79,6 +114,36 @@ public class PlayerController : MonoBehaviour
             {
                 isLevelOver = true;
             }
+        }
+        else if (other.gameObject.GetComponent<Powerup>() != null)
+        {
+            ActivatePowerUp(other.gameObject.tag);
+            Destroy(other.gameObject);
+        }
+    }
+
+    void ActivatePowerUp(string type)
+    {
+        switch (type)
+        {
+            case "Speed":
+                speedUp = true;
+                attractPickUps = false;
+                jumpHigher = false;
+                powerUpTime = 10f;
+                break;
+            case "Magnet":
+                speedUp = false;
+                attractPickUps = true;
+                jumpHigher = false;
+                powerUpTime = 15f;
+                break;
+            case "Jump":
+                speedUp = false;
+                attractPickUps = false;
+                jumpHigher = true;
+                powerUpTime = 10f;
+                break;
         }
     }
 

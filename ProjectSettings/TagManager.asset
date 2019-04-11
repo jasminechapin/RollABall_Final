@@ -9,6 +9,9 @@ TagManager:
   - OOB
   - Pick Up
   - Wall
+  - Speed
+  - Magnet
+  - Jump
   layers:
   - Default
   - TransparentFX
