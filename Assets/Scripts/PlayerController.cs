@@ -6,7 +6,6 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
-
     private int count;
     private int numCollectables = 0;
     public Text countText;
@@ -19,12 +18,14 @@ public class PlayerController : MonoBehaviour
     public bool speedUp;
     public bool jumpHigher;
     public bool attractPickUps;
+    public bool jpFloat;
+    public bool stopTimer;
+
     public float powerUpTime;
     public GameObject magnetSphere;
     public Text timer;
-
-    
     private Rigidbody rb;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -51,7 +52,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (!isLevelOver)
+        if (!isLevelOver && !stopTimer)
         {
             timer.text = ((int)Time.time).ToString();
         }
@@ -69,7 +70,11 @@ public class PlayerController : MonoBehaviour
 
             rb.AddForce(movement * speed);
 
-            if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !jpFloat)
+            {
+                rb.AddForce(0, jumpForce, 0);
+            }
+            else if (Input.GetKeyDown(KeyCode.Space) && jpFloat)
             {
                 rb.AddForce(0, jumpForce, 0);
             }
@@ -92,6 +97,13 @@ public class PlayerController : MonoBehaviour
         {
             jumpForce = 500f;
         }
+        else if (jpFloat && powerUpTime > 0f)
+        {
+            jumpForce = 100f;
+            isGrounded = true;
+            transform.position = new Vector3(transform.position.x, 
+                transform.position.y + Mathf.Cos(Time.time * 1 / Mathf.PI), transform.position.z);
+        }
 
         if (powerUpTime > 0)
         {
@@ -103,10 +115,16 @@ public class PlayerController : MonoBehaviour
             attractPickUps = false;
             jumpHigher = false;
 
-            speed = 5f;
-            magnetSphere.SetActive(false);
-            jumpForce = 300f;
+            ResetControls();
         }
+    }
+
+
+    void ResetControls()
+    {
+        speed = 5f;
+        magnetSphere.SetActive(false);
+        jumpForce = 300f;
     }
 
     void OnTriggerEnter(Collider other)
@@ -133,12 +151,16 @@ public class PlayerController : MonoBehaviour
 
     void ActivatePowerUp(string type)
     {
+
+        ResetControls();
         switch (type)
         {
             case "Speed":
                 speedUp = true;
                 attractPickUps = false;
                 jumpHigher = false;
+                stopTimer = false;
+                jpFloat = false;
                 powerUpTime = 10f;
                 break;
             case "Magnet":
@@ -146,12 +168,32 @@ public class PlayerController : MonoBehaviour
                 attractPickUps = true;
                 jumpHigher = false;
                 powerUpTime = 5f;
+                stopTimer = false;
+                jpFloat = false;
                 break;
             case "Jump":
                 speedUp = false;
                 attractPickUps = false;
                 jumpHigher = true;
                 powerUpTime = 15f;
+                stopTimer = false;
+                jpFloat = false;
+                break;
+            case "Stop":
+                speedUp = false;
+                attractPickUps = false;
+                jumpHigher = false;
+                powerUpTime = 10f;
+                stopTimer = true;
+                jpFloat = false;
+                break;
+            case "Float":
+                speedUp = false;
+                attractPickUps = false;
+                jumpHigher = false;
+                powerUpTime = 20f;
+                stopTimer = false;
+                jpFloat = true;
                 break;
         }
     }

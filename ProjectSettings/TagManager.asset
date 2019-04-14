@@ -13,6 +13,7 @@ TagManager:
   - Magnet
   - Jump
   - Stop
+  - Float
   layers:
   - Default
   - TransparentFX
